@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>AUTOMOVILES</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:panel id="panel" header="Registro" style="margin-bottom:10px;">
+                <p:messages id="messages" />
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <p:outputLabel for="nombre" value="Nombre:" />
+                    <p:inputText id="nombre" value="#{controlCarro.nombre}" validatorMessage="Ingrese solo letras" required="true" label="Nombre">
+                        <f:validateRegex pattern="^[a-zA-Z]+$" />
+                    </p:inputText>
+                    <p:message for="nombre" />
+
+                    <p:outputLabel for="marca" value="Marca:" />
+                    <p:selectOneMenu id="marca" value="#{controlCarro.marca}" required="true" style="width:125px">
+                        <f:selectItem itemLabel="Select One" itemValue="" />
+                        <f:selectItem itemLabel="BMW" itemValue="BMW" />
+                        <f:selectItem itemLabel="Mazda" itemValue="Mazda" />
+                        <f:selectItem itemLabel="Renault" itemValue="Renault" />
+                    </p:selectOneMenu>
+                    <p:message for="marca" />
+
+                    <p:outputLabel for="modelo" value="Modelo: " />
+                    <p:inputText id="modelo" value="#{controlCarro.modelo}" required="true" label="Modelo">
+                    </p:inputText>
+                    <p:message for="modelo" />
+                    
+
+                </h:panelGrid>
+            </p:panel>
+
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:commandButton value="Registrar" update=":form:panel :form1:data" id="nonAjax"
+                                     action="#{controlCarro.agregar()}" style="margin-right:20px;" ajax="true" />
+                </f:facet>
+            </p:toolbar>
+        </h:form>
+
+        <style type="text/css">
+            .ui-row-editor .ui-row-editor-pencil {
+                margin-left:8px;
+            }
+        </style>
+        <style type="text/css">
+            i {
+                margin-right: 10px;
+            }
+
+            .ui-grid-col-3 {
+                padding: 4px 10px;
+            }
+        </style>
+
+        <h:form id="form1">
+            <p:growl id="msgs" showDetail="true"/>
+
+            <p:dataTable id="data" var="carro" value="#{lista.listaCarro}" editable="true"
+                         style="margin-bottom:20px" rowKey="#{carro.nombre}" paginator="true" rows="5" widgetVar="carsTable">
+                <f:facet name="header">
+                    Carros
+                </f:facet>
+
+                <p:ajax event="rowEdit" listener="#{controlCarro.modificar(event)}" update=":form1:msgs" />
+                <p:ajax event="rowEditCancel" listener="#{controlCarro.cancelar(event)}" update=":form1:msgs" />
+
+                <p:column filterBy="#{carro.nombre}" headerText="Nombre" filterMatchMode="contains" >
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{carro.nombre}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="modelInput" value="#{carro.nombre}" style="width:100%"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column filterBy="#{carro.marca}" headerText="Marca" filterMatchMode="exact">
+                    <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('carsTable').filter()" styleClass="custom-filter">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItem itemLabel="BMW" itemValue="BMW" />
+                                <f:selectItem itemLabel="Mazda" itemValue="Mazda" />
+                                <f:selectItem itemLabel="Renault" itemValue="Renault" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{carro.marca}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{carro.marca}" style="width:100%" label="Marca"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Modelo" filterBy="#{carro.modelo}" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{carro.modelo}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{carro.modelo}" style="width:100%" label="Modelo"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:35px">
+                    <p:rowEditor />
+                </p:column>
+
+                <p:column style="width:35px">
+                    <p:commandButton update=":form1:data" action="#{controlCarro.eliminar()}" icon="pi pi-times" title="Borrar"> 
+                        <f:setPropertyActionListener value="#{carro}" target="#{controlCarro.borrarCarro}" />
+                    </p:commandButton>
+                        
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
+
